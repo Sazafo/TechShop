@@ -1,4 +1,7 @@
-<!-- Fragmento #1 que irá en el head de todas las páginas, así se incluye todo lo necesario de configuración-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"      
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
     <head th:fragment="head">
         <title>TechShop</title>
         <meta charset="UTF-8"/>
@@ -8,14 +11,12 @@
         <link rel="icon" type="image/png" sizes="256x256" href="/fav/favicon-256x256.png"/>
         <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
         <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
+        <link th:href="@{/css/estilos.css}" rel="stylesheet"/>
         <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
         <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>    
-        <link th:href="@{/css/estilos.css}" rel="stylesheet"/>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
     </head>
-
-
-<!-- Fragmento #2  define el encabezado de las páginas, en concreto el menú y enlaces rápidos -->
+    <body>
         <header th:fragment="header" class="header">
             <nav class="navbar navbar-expand-sm p-0">
                 <div class="container">                    
@@ -57,12 +58,38 @@
                                     <li><a class="dropdown-item" th:href="@{/(lang=en)}">English</a></li>
                                     <li><a class="dropdown-item" th:href="@{/(lang=fr)}">Française</a></li>
                                     <li><a class="dropdown-item" th:href="@{/(lang=pt)}">Portugaise</a></li>
-                                </ul>
+                                </ul>               
                             </li>
                         </ul>
-                        <div id="resultBlock">
-                        </div>         
-                        
+ 
+                        <ul class="navbar-nav" sec:authorize="!isAuthenticated()">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/login}">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    <span class="ms-1">Login</span>
+                                </a>
+                            </li>
+                        </ul>
+ 
+                        <ul class="navbar-nav" sec:authorize="isAuthenticated()">
+                            <li class="nav-item my-auto">
+                                <a class="nav-link">
+                                    <img th:src="@{${session.imagenUsuario}}"
+                                         alt="usuario" height="40" class="rounded-circle"/>
+                                    <span sec:authentication="name" class="ms-1"></span>
+                                </a>
+                            </li>
+                            <li class="nav-item my-auto">
+                                <form method="post" th:action="@{/logout}">
+                                    <button class="btn nav-link" type="submit">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span class="ms-1">Logout</span>
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+ 
+                        <div id="resultBlock"></div>
                     </div>
                 </div>
             </nav>
@@ -76,8 +103,42 @@
                 </div>
             </section>
         </header>
-
-<!-- Fragmento #3  define el footer de las páginas, aparte de esto se podria incluir enlaces a redes socilaes y demás -->
+ 
         <footer th:fragment="footer" class="p-2 mt-5 bg-info text-white">
             <p class="lead text-center">[[#{plantilla.derechos}]] &COPY;</p>
         </footer>
+ 
+        <section th:fragment="mostrarToast">
+            <div aria-live="polite" aria-atomic="true" 
+                 class="position-fixed top-50 start-50 translate-middle" style="z-index: 1080;">                
+                <div th:if="${error}" class="toast show"
+                     role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+                    <div class="toast-header text-white bg-danger">
+                        <i class="fa-solid fa-bomb"></i> <strong class="me-auto"> [[#{error}]]</strong>
+                    </div>
+                    <div class="toast-body">
+                        <p>[[${error}]]</p>
+                        <div class="mt-2 pt-2 border-top text-center">
+                            <button type="button" class="btn btn-secondary btn-sm" 
+                                    data-bs-dismiss="toast">[[#{accion.cerrar}]]</button>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${todoOK}" class="toast show"
+                     role="status" aria-live="polite" aria-atomic="true" data-bs-autohide="true">
+                    <div class="toast-header text-white bg-success">
+                        <i class="fa-solid fa-square-check"></i> <strong class="me-auto"> [[#{atencion}]]</strong>
+                    </div>
+                    <div class="toast-body">
+                        <p>[[${todoOK}]]</p>
+                        <div class="mt-2 pt-2 border-top text-center">
+                            <button type="button" class="btn btn-secondary btn-sm" 
+                                    data-bs-dismiss="toast">[[#{accion.cerrar}]]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+ 
+    </body>
+</html>
