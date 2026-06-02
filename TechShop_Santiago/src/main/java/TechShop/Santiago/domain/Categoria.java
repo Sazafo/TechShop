@@ -16,6 +16,7 @@ import lombok.Data;
 
 @Entity
 @Table(name = "categoria")
+@Data
 public class Categoria implements Serializable {
 
     // Se recomienda añadir un serialVersionUID
